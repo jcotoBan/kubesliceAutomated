@@ -1,39 +1,45 @@
+#controller and manager install
 
-#Helm setup
-- name: Installing Helm
-  block:
-  - name: Download Helm GPG key
-    get_url:
-      url: https://baltocdn.com/helm/signing.asc
-      dest: /tmp/helm-signing.asc
-  - name: Import Helm GPG key
-    shell:
-      cmd: cat /tmp/helm-signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null
-  - name: Install transport packages
-    apt:
-      name: apt-transport-https
-      state: present
-  - name: Determine architecture
-    command: dpkg --print-architecture
-    register: architecture
-  - name: Configure Helm repository
-    blockinfile:
-      path: /etc/apt/sources.list.d/helm-stable-debian.list
-      block: |
-        deb [arch={{ architecture.stdout }} signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main
-      create: yes
-  - name: Update apt package cache
-    apt:
-      update_cache: yes
-  - name: Install Helm
-    apt:
-      name: helm
-      state: present
+- name: adding controller template
+  template:
+    mode: '0600'
+    src: templates/controller.yml.j2
+    dest: /tmp/controller.yml
 
-- name: Install kubectl
-  command: snap install kubectl --classic
+- name: deploy kubeslice controller with custom values
+  kubernetes.core.helm:
+    name: kubeslice-controller
+    chart_ref: kubeslice/kubeslice-controller
+    release_namespace: kubeslice-controller
+    create_namespace: true
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/controller.yml
 
-- name: Install kubectx
-  apt:
-    name: kubectx
+- name: adding manager template
+  template:
+    mode: '0600'
+    src: templates/manager.yml.j2
+    dest: /tmp/manager.yml
+
+- name: install kubeslice manager
+  kubernetes.core.helm:
+    name: kubeslice-ui
+    chart_ref: kubeslice/kubeslice-ui
+    release_namespace: kubeslice-controller
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/manager.yml
+
+# project install
+
+- name: adding project template
+  template:
+    mode: '0600'
+    src: templates/proyect.yml.j2
+    dest: /tmp/proyect.yml
+
+- name: create project resource
+  kubernetes.core.k8s:
     state: present
+    src: /tmp/proyect.yml

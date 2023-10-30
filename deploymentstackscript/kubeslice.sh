@@ -8,6 +8,10 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
+## Kubeslice project
+#<UDF name="kubeslice_project" label="Kubeslice project name">
+
+
 ## Kubeslice image secret
 #<UDF name="license_username" label="Kubeslice image secret username">
 #<UDF name="license_password" label="Kubeslice image secret password">
