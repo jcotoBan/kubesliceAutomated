@@ -20,7 +20,7 @@ trap "cleanup $? $LINENO" EXIT
 
 
 # git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+export GIT_REPO="https://github.com/jcotoBan/kubesliceAutomated.git"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -57,12 +57,28 @@ function udf {
 
   # Kubeslice vars
 
-  if [[ -n ${POSTGRES_PASSWORD} ]]; then
-    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
+  if [[ -n ${LICENSE_USERNAME} ]]; then
+    echo "license_username: ${LICENSE_USERNAME}" >> ${group_vars};
   fi
 
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  if [[ -n ${LICENSE_PASSWORD} ]]; then
+    echo "license_password: ${LICENSE_PASSWORD}" >> ${group_vars};
+  fi
+
+  if [[ -n ${LICENSE_EMAIL} ]]; then
+    echo "license_email: ${LICENSE_EMAIL}" >> ${group_vars};
+  fi
+
+  if [[ -n ${LICENSE_TYPE} ]]; then
+    echo "license_type: ${LICENSE_EMAIL}" >> ${group_vars};
+  fi
+
+  if [[ -n ${LICENSE_MODE} ]]; then
+    echo "license_mode: ${LICENSE_MODE}" >> ${group_vars};
+  fi
+
+  if [[ -n ${LICENSE_CUSTOM_USERNAME} ]]; then
+    echo "license_custom_username: ${LICENSE_CUSTOM_USERNAME}" >> ${group_vars};
   fi
   
 }
