@@ -1,0 +1,74 @@
+#Controller
+- name: Create Kubeconfig directory if it does not exist
+  file:
+    path: /root/.kube/
+    state: directory
+
+
+- name: Create Manager cluster
+  linode.cloud.lke_cluster:
+    label: "{{ controller_cluster_label }}"
+    region: "{{ controller_cluster_dc }}"
+    k8s_version: "{{ controller_cluster_version }}"
+    node_pools:
+    - type: "{{ controller_cluster_node_plan }}"
+      count: "{{ controller_cluster_nodes }}"
+    state: present
+
+- name: Fetch Kubeconfig
+  linode.cloud.lke_cluster_info:
+    label: "{{ controller_cluster_label }}"
+  register: output_controller
+  retries: 20
+  delay: 30
+
+- name: Save controller Kubeconfig to a File
+  copy:
+    content: "{{ output_controller.kubeconfig | b64decode }}"
+    dest: /root/.kube/controller_config
+    mode: '644'
+
+
+#Worker
+- name: Create worker cluster
+  linode.cloud.lke_cluster:
+    label: "{{ worker_cluster_label }}"
+    region: "{{ worker_cluster_dc }}"
+    k8s_version: "{{ worker_cluster_version }}"
+    node_pools:
+    - type: "{{ worker_cluster_node_plan }}"
+      count: "{{ worker_cluster_nodes }}"
+    state: present
+
+- name: Fetch Kubeconfig
+  linode.cloud.lke_cluster_info:
+    label: "{{ worker_cluster_label }}"
+  register: output_worker
+  retries: 20
+  delay: 30
+
+- name: Save Kubeconfig to a File
+  copy:
+    content: "{{ output_worker.kubeconfig | b64decode }}"
+    dest: /root/.kube/worker_config
+    mode: '644'
+
+#Adding kubeconfig env
+- name: setting up kubeconfig
+  shell:
+    cmd: |
+      echo 'export KUBECONFIG=~/.kube/controller_config:~/.kube/controller_config' >> ~/.bashrc
+      source ~/.bashrc
+
+#Adding controller_endpoint var
+
+- name: Retrieve Kubernetes Cluster Info
+  k8s_cluster_info:
+    kubeconfig: /root/.kube/controller_config
+  register: controller_cluster_info
+
+
+- name: Save Cluster Endpoint to a Variable
+  set_fact:
+    controller_endpoint: "{{ controller_cluster_info.cluster_info.server }}"
+    
