@@ -32,8 +32,3 @@
 
 - name: Install kubectl
   command: snap install kubectl --classic
-
-- name: Install kubectx
-  apt:
-    name: kubectx
-    state: present
