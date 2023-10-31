@@ -37,7 +37,7 @@ function cleanup {
 
 function udf {
   
-  local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  local group_vars="/tmp/kubesliceAutomated/ansible/group_vars/linode/vars"
   
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
