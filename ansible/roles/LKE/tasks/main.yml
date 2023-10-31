@@ -63,7 +63,7 @@
 #Adding controller_endpoint var
 
 - name: Retrieve Kubernetes Cluster Info
-  k8s_cluster_info:
+  kubernetes.core.k8s_cluster_info:
     kubeconfig: /root/.kube/controller_config
   register: controller_cluster_info
 
