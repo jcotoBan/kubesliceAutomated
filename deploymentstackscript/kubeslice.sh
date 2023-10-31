@@ -8,6 +8,10 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
+##PAT 
+
+#<UDF name="pat_token_password" Label="Linode API token" />
+
 ##Controller kubernetes cluster
 #<UDF name="controller_cluster_label" label="Controller cluster label">
 #<UDF name="controller_cluster_dc" Label="The datacenter for your Controller cluster" oneOf="ap-west,ca-central,ap-southeast,us-iad,us-ord,fr-par,us-sea,br-gru,nl-ams,se-sto,in-maa,jp-osa,it-mil,us-mia,id-cgk,us-lax,us-central,us-west,us-southeast,us-east,eu-west,ap-south,eu-central" default="us-sea">
@@ -37,6 +41,8 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="license_mode" label="Kubeslice License Mode" oneOf="auto,manual" default="auto">
 #<UDF name="license_custom_username" label="Kubeslice License custom user name">
 
+#PAT token
+export LINODE_TOKEN="$PAT_TOKEN_PASSWORD"
 
 # git repo
 export GIT_REPO="https://github.com/jcotoBan/kubesliceAutomated.git"
