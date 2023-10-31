@@ -58,7 +58,6 @@
   shell:
     cmd: |
       echo 'export KUBECONFIG=~/.kube/controller_config:~/.kube/controller_config' >> ~/.bashrc
-      source ~/.bashrc
 
 #Adding controller_endpoint var
 
