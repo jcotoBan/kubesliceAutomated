@@ -139,7 +139,7 @@ function udf {
   fi
 
   if [[ -n ${LICENSE_TYPE} ]]; then
-    echo "license_type: ${LICENSE_EMAIL}" >> ${group_vars};
+    echo "license_type: ${LICENSE_TYPE}" >> ${group_vars};
   fi
 
   if [[ -n ${LICENSE_MODE} ]]; then

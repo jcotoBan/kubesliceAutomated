@@ -61,13 +61,11 @@
 
 #Adding controller_endpoint var
 
-- name: Retrieve Kubernetes Cluster Info
-  kubernetes.core.k8s_cluster_info:
-    kubeconfig: /root/.kube/controller_config
-  register: controller_cluster_info
+- name: Run kubectl cluster-info
+  command: kubectl cluster-info --kubeconfig=/root/.kube/controller_config
+  register: cluster_info_output
 
-
-- name: Save Cluster Endpoint to a Variable
+- name: Extract Control Plane Endpoint
   set_fact:
-    controller_endpoint: "{{ controller_cluster_info.cluster_info.server }}"
+    controller_endpoint: "{{ cluster_info_output.stdout_lines[0] | regex_replace('Kubernetes control plane is running at (.*)', '\\1') }}"
     
