@@ -120,7 +120,7 @@ function udf {
   fi
 
   if [[ -n ${WORKER_CLUSTER_NODES} ]]; then
-    echo "Worker_cluster_nodes: ${WORKER_CLUSTER_NODES}" >> ${group_vars};
+    echo "worker_cluster_nodes: ${WORKER_CLUSTER_NODES}" >> ${group_vars};
   fi
 
 
