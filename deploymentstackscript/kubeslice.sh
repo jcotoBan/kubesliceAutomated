@@ -104,15 +104,15 @@ function udf {
 
 
   if [[ -n ${WORKER_CLUSTER_LABEL} ]]; then
-    echo "Worker_cluster_label: ${WORKER_CLUSTER_LABEL}" >> ${group_vars};
+    echo "worker_cluster_label: ${WORKER_CLUSTER_LABEL}" >> ${group_vars};
   fi
 
   if [[ -n ${WORKER_CLUSTER_DC} ]]; then
-    echo "Worker_cluster_dc: ${WORKER_CLUSTER_DC}" >> ${group_vars};
+    echo "worker_cluster_dc: ${WORKER_CLUSTER_DC}" >> ${group_vars};
   fi
 
   if [[ -n ${WORKER_CLUSTER_VERSION} ]]; then
-    echo "Worker_cluster_version: ${WORKER_CLUSTER_VERSION}" >> ${group_vars};
+    echo "worker_cluster_version: ${WORKER_CLUSTER_VERSION}" >> ${group_vars};
   fi
 
   if [[ -n ${WORKER_CLUSTER_NODE_PLAN} ]]; then
