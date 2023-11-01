@@ -37,7 +37,7 @@
 #Adding controller_endpoint var
 
 - name: Run kubectl cluster-info
-  command: kubectl cluster-info --kubeconfig=/root/.kube/controller_config | grep 'Kubernetes control plane' | awk '{ print $7}'
+  shell: kubectl cluster-info --kubeconfig=/root/.kube/controller_config | grep 'Kubernetes control plane' | awk '{ print $7}'
   register: cluster_info_output
 
 - name: Extract Control Plane Endpoint
