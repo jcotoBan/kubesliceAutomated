@@ -42,7 +42,5 @@
 
 - name: Extract Control Plane Endpoint
   set_fact:
-    controller_endpoint: "{{ cluster_info_output.stdout | regex_replace('\\p{Cc}', '') }}"
-  
-
+    controller_endpoint: "{{ cluster_info_output.stdout | regex_replace('[\x00-\x1F\x7F]+', '') }}"
     
