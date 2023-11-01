@@ -37,10 +37,10 @@
 #Adding controller_endpoint var
 
 - name: Run kubectl cluster-info
-  shell: kubectl cluster-info --kubeconfig=/root/.kube/controller_config | grep 'Kubernetes control plane' | awk '{ print $7}'
+  shell: kubectl cluster-info --kubeconfig=/root/.kube/controller_config | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
   register: cluster_info_output
 
 - name: Extract Control Plane Endpoint
   set_fact:
-    controller_endpoint: "{{ cluster_info_output.stdout | regex_replace('ESC\\[0;33m|ESC\\[0m', '') }}"
+    controller_endpoint: "{{ cluster_info_output.stdout }}"
     
