@@ -36,7 +36,7 @@
 - name: adding project template
   template:
     mode: '0600'
-    src: templates/proyect.yml.j2
+    src: templates/project.yml.j2
     dest: /tmp/project.yml
 
 - name: create project resource
