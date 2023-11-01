@@ -28,36 +28,11 @@
     dest: /root/.kube/controller_config
     mode: '644'
 
-
-#Worker
-- name: Create worker cluster
-  linode.cloud.lke_cluster:
-    label: "{{ worker_cluster_label }}"
-    region: "{{ worker_cluster_dc }}"
-    k8s_version: "{{ worker_cluster_version }}"
-    node_pools:
-    - type: "{{ worker_cluster_node_plan }}"
-      count: "{{ worker_cluster_nodes }}"
-    state: present
-
-- name: Fetch Kubeconfig
-  linode.cloud.lke_cluster_info:
-    label: "{{ worker_cluster_label }}"
-  register: output_worker
-  retries: 20
-  delay: 30
-
-- name: Save Kubeconfig to a File
-  copy:
-    content: "{{ output_worker.kubeconfig | b64decode }}"
-    dest: /root/.kube/worker_config
-    mode: '644'
-
 #Adding kubeconfig env
 - name: setting up kubeconfig
   shell:
     cmd: |
-      echo 'export KUBECONFIG=~/.kube/controller_config:~/.kube/controller_config' >> ~/.bashrc
+      echo 'export KUBECONFIG=~/.kube/controller_config' >> ~/.bashrc
 
 #Adding controller_endpoint var
 

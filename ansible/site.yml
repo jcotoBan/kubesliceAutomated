@@ -1,5 +1,5 @@
 # linode ansible playbook
-- name: Automated kubeslice setup
+- name: Automated kubeslice manager setup
   hosts: localhost
   connection: local
   gather_facts: true
@@ -10,4 +10,5 @@
   roles:
     - k8s_tools
     - LKE
+    - kubeslice_prereq
     - kubeslice_controller

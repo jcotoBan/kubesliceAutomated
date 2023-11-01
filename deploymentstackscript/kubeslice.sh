@@ -20,13 +20,6 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="controller_cluster_nodes" label="Number of nodes for Controller cluster">
 
 
-##Worker kubernetes cluster
-#<UDF name="worker_cluster_label" label="Worker cluster label">
-#<UDF name="worker_cluster_dc" Label="The datacenter for your Worker cluster" oneOf="ap-west,ca-central,ap-southeast,us-iad,us-ord,fr-par,us-sea,br-gru,nl-ams,se-sto,in-maa,jp-osa,it-mil,us-mia,id-cgk,us-lax,us-central,us-west,us-southeast,us-east,eu-west,ap-south,eu-central" default="us-sea" />
-#<UDF name="worker_cluster_version" label="Worker kubernetes version" oneOf="1.26,1.27" default="1.27">
-#<UDF name="worker_cluster_node_plan" Label="The plan for your Worker nodes" oneOf="g6-dedicated-2,g6-dedicated-4,g6-dedicated-8,g6-dedicated-16,g6-dedicated-32,g6-dedicated-48,g6-dedicated-50,g6-dedicated-56,g6-dedicated-64" default="g6-dedicated-4">
-#<UDF name="worker_cluster_nodes" label="Number of nodes for Worker cluster">
-
 ## Kubeslice project
 #<UDF name="kubeslice_project" label="Kubeslice project name">
 
@@ -100,27 +93,6 @@ function udf {
 
   if [[ -n ${CONTROLLER_CLUSTER_NODES} ]]; then
     echo "controller_cluster_nodes: ${CONTROLLER_CLUSTER_NODES}" >> ${group_vars};
-  fi
-
-
-  if [[ -n ${WORKER_CLUSTER_LABEL} ]]; then
-    echo "worker_cluster_label: ${WORKER_CLUSTER_LABEL}" >> ${group_vars};
-  fi
-
-  if [[ -n ${WORKER_CLUSTER_DC} ]]; then
-    echo "worker_cluster_dc: ${WORKER_CLUSTER_DC}" >> ${group_vars};
-  fi
-
-  if [[ -n ${WORKER_CLUSTER_VERSION} ]]; then
-    echo "worker_cluster_version: ${WORKER_CLUSTER_VERSION}" >> ${group_vars};
-  fi
-
-  if [[ -n ${WORKER_CLUSTER_NODE_PLAN} ]]; then
-    echo "worker_cluster_node_plan: ${WORKER_CLUSTER_NODE_PLAN}" >> ${group_vars};
-  fi
-
-  if [[ -n ${WORKER_CLUSTER_NODES} ]]; then
-    echo "worker_cluster_nodes: ${WORKER_CLUSTER_NODES}" >> ${group_vars};
   fi
 
 
