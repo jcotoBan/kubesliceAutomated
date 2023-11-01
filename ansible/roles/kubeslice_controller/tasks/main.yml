@@ -41,5 +41,6 @@
 
 - name: create project resource
   kubernetes.core.k8s:
+    kubeconfig: /root/.kube/controller_config
     state: present
     src: /tmp/project.yml

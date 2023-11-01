@@ -75,6 +75,10 @@ function udf {
 
   #LKE vars
 
+  if [[ -n ${KUBESLICE_PROJECT} ]]; then
+    echo "kubeslice_project: ${KUBESLICE_PROJECT}" >> ${group_vars};
+  fi
+
   if [[ -n ${CONTROLLER_CLUSTER_LABEL} ]]; then
     echo "controller_cluster_label: ${CONTROLLER_CLUSTER_LABEL}" >> ${group_vars};
   fi
