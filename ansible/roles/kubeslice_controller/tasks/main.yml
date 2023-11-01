@@ -33,6 +33,10 @@
 
 # project install
 
+- name: pause to let helm charts install correctly
+  ansible.builtin.pause:
+    minutes: 4
+
 - name: adding project template
   template:
     mode: '0600'
