@@ -1,0 +1,46 @@
+#Controller
+- name: Create Kubeconfig directory if it does not exist
+  file:
+    path: /root/.kube/
+    state: directory
+
+
+- name: Create Manager cluster
+  linode.cloud.lke_cluster:
+    label: "{{ controller_cluster_label }}"
+    region: "{{ controller_cluster_dc }}"
+    k8s_version: "{{ controller_cluster_version }}"
+    node_pools:
+    - type: "{{ controller_cluster_node_plan }}"
+      count: "{{ controller_cluster_nodes }}"
+    state: present
+
+- name: Fetch Kubeconfig
+  linode.cloud.lke_cluster_info:
+    label: "{{ controller_cluster_label }}"
+  register: output_controller
+  retries: 20
+  delay: 30
+
+- name: Save controller Kubeconfig to a File
+  copy:
+    content: "{{ output_controller.kubeconfig | b64decode }}"
+    dest: /root/.kube/controller_config
+    mode: '644'
+
+#Adding kubeconfig env
+- name: setting up kubeconfig
+  shell:
+    cmd: |
+      echo 'export KUBECONFIG=~/.kube/controller_config' >> ~/.bashrc
+
+#Adding controller_endpoint var
+
+- name: Run kubectl cluster-info
+  shell: kubectl cluster-info --kubeconfig=/root/.kube/controller_config | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
+  register: cluster_info_output
+
+- name: Extract Control Plane Endpoint
+  set_fact:
+    controller_endpoint: "{{ cluster_info_output.stdout }}"
+    

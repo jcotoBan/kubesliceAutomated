@@ -1,0 +1,50 @@
+#controller and manager install
+
+- name: adding controller template
+  template:
+    mode: '0600'
+    src: templates/controller.yml.j2
+    dest: /tmp/controller.yml
+
+- name: deploy kubeslice controller with custom values
+  kubernetes.core.helm:
+    name: kubeslice-controller
+    chart_ref: kubeslice/kubeslice-controller
+    release_namespace: kubeslice-controller
+    create_namespace: true
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/controller.yml
+
+- name: adding manager template
+  template:
+    mode: '0600'
+    src: templates/manager.yml.j2
+    dest: /tmp/manager.yml
+
+- name: install kubeslice manager
+  kubernetes.core.helm:
+    name: kubeslice-ui
+    chart_ref: kubeslice/kubeslice-ui
+    release_namespace: kubeslice-controller
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/manager.yml
+
+# project install
+
+- name: pause to let helm charts install correctly
+  ansible.builtin.pause:
+    minutes: 4
+
+- name: adding project template
+  template:
+    mode: '0600'
+    src: templates/project.yml.j2
+    dest: /tmp/project.yml
+
+- name: create project resource
+  kubernetes.core.k8s:
+    kubeconfig: /root/.kube/controller_config
+    state: present
+    src: /tmp/project.yml
