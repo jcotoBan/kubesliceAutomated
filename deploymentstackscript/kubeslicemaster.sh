@@ -51,7 +51,7 @@ function cleanup {
 
 function udf {
   
-  local group_vars="/tmp/kubesliceAutomated/ansible/group_vars/linode/vars"
+  local group_vars="/tmp/kubesliceAutomated/ansible/kubeslicemaster/group_vars/linode/vars"
   
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
@@ -139,7 +139,7 @@ function run {
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
-  cd /tmp/kubesliceAutomated/ansible
+  cd /tmp/kubesliceAutomated/ansible/kubeslicemaster
   pip3 install virtualenv
   python3 -m virtualenv env
   source env/bin/activate
