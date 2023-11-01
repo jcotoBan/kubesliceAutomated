@@ -42,4 +42,4 @@
 - name: create project resource
   kubernetes.core.k8s:
     state: present
-    src: /tmp/proyect.yml
+    src: /tmp/project.yml
