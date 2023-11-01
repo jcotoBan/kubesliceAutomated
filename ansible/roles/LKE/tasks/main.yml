@@ -42,5 +42,5 @@
 
 - name: Extract Control Plane Endpoint
   set_fact:
-    controller_endpoint: "{{ cluster_info_output }}"
+    controller_endpoint: "{{ cluster_info_output.stdout }}"
     
