@@ -37,7 +37,7 @@
   template:
     mode: '0600'
     src: templates/proyect.yml.j2
-    dest: /tmp/proyect.yml
+    dest: /tmp/project.yml
 
 - name: create project resource
   kubernetes.core.k8s:
