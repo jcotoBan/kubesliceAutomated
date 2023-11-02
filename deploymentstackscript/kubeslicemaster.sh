@@ -23,7 +23,7 @@ trap "cleanup $? $LINENO" EXIT
 ##Regions_workers
 #<UDF name="worker_cluster_label" label="worker cluster label, each cluster will be named label+region">
 #<UDF name="workers_dcs" Label="The regions where you want to deploy your worker clusters" manyOf="Mumbai/IN,Toronto/CA,Sydney/AU,Washington/DC,Chicago/IL,Paris/FR,Seattle/WA,Sao Paulo/BR,Amsterdam/NL,Stockholm/SE,Chennai/IN,Osaka/JP,Milan/IT,Miami/FL,Jakarta/ID,Los Angeles/CA,Dallas/TX,Fremont/CA,Atlanta/GA,Newark/NJ,London/UK,Singapore/SG,Frankfurt/DE">
-#<UDF name="worker_cluster_version" label="Controller kubernetes version" oneOf="1.26,1.27" default="1.27">
+#<UDF name="worker_cluster_version" label="worker kubernetes version" oneOf="1.26,1.27" default="1.27">
 #<UDF name="worker_cluster_node_plan" Label="The plan for your worker nodes" oneOf="g6-dedicated-2,g6-dedicated-4,g6-dedicated-8,g6-dedicated-16,g6-dedicated-32,g6-dedicated-48,g6-dedicated-50,g6-dedicated-56,g6-dedicated-64" default="g6-dedicated-4">
 #<UDF name="worker_cluster_nodes" label="Number of nodes for worker cluster">
 
@@ -162,7 +162,7 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone --branch experimental ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
