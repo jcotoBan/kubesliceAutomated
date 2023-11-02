@@ -122,6 +122,9 @@ function udf {
     echo "worker_cluster_node_plan: ${WORKER_CLUSTER_NODE_PLAN}" >> ${group_vars};
   fi
 
+  if [[ -n ${WORKER_CLUSTER_NODES} ]]; then
+    echo "worker_cluster_nodes: ${WORKER_CLUSTER_NODES}" >> ${group_vars};
+  fi
 
 
   # Kubeslice vars
