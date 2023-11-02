@@ -91,25 +91,25 @@
 
 - name: create worker clusters
   linode.cloud.lke_cluster:
-    label: "{{ worker_cluster_label ~ '-' ~ regions }}"
-    region: "{{ regions }}"
+    label: "{{ worker_cluster_label ~ '-' ~ item }}"
+    region: "{{ item }}"
     k8s_version: "{{ worker_cluster_version }}"
     node_pools:
     - type: "{{ worker_cluster_node_plan }}"
       count: "{{ worker_cluster_nodes }}"
     state: present
-  with_regions: "{{ regions_array_code }}"
+  with_items: "{{ regions_array_code }}"
 
 
 - name: Fetch Kubeconfig
   linode.cloud.lke_cluster_info:
-    label: "{{ worker_cluster_label ~ '-' ~ regions }}"
+    label: "{{ worker_cluster_label ~ '-' ~ item }}"
   register: output_controller
   retries: 20
   delay: 30
   set_fact:
     kubeconfig_array: "{{ kubeconfig_array + [output_controller] }}"
-  with_regions: "{{ regions_array_code }}"
+  with_items: "{{ regions_array_code }}"
 
 - name: Save workers kubeconfig to a File
   copy:
