@@ -25,17 +25,16 @@
       "Singapore/SG" : "ap-south"
       "Frankfurt/DE" : "eu-central" 
 
+- name: Create Kubeconfig directory if it does not exist
+  file:
+    path: /root/.kube/
+    state: directory
+
 #Controller
 
 # - name: replace region for code value
 #   set_fact:
 #     controller_cluster_dc_code: "{{ regions_map[controller_cluster_dc] }}"
-
-
-# - name: Create Kubeconfig directory if it does not exist
-#   file:
-#     path: /root/.kube/
-#     state: directory
 
 
 # - name: Create Manager cluster
@@ -109,8 +108,9 @@
   delay: 30
   with_items: "{{ regions_array_code }}"
 
-- debug:
-    var: kubeconfig_array
+- name: List all keys
+  debug:
+    msg: "{{ kubeconfig_array | dict2items | map(attribute='key') | list }}"
 
 - name: Save workers kubeconfig to a File
   copy:
