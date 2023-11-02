@@ -104,11 +104,9 @@
 - name: Fetch Kubeconfig
   linode.cloud.lke_cluster_info:
     label: "{{ worker_cluster_label ~ '-' ~ item }}"
-  register: output_controller
+  register: kubeconfig_array
   retries: 20
   delay: 30
-  set_fact:
-    kubeconfig_array: "{{ kubeconfig_array + [output_controller] }}"
   with_items: "{{ regions_array_code }}"
 
 - name: Save workers kubeconfig to a File
