@@ -29,7 +29,7 @@
 
 - name: replace region for code value
   set_fact:
-    ontroller_cluster_dc_code: "{{ regions_map[controller_cluster_dc] }}"
+    controller_cluster_dc_code: "{{ regions_map[controller_cluster_dc] }}"
 
 
 - name: Create Kubeconfig directory if it does not exist
