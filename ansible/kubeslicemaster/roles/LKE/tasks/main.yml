@@ -114,10 +114,8 @@
 
 - name: Save workers kubeconfig to a File
   copy:
-    content: "{{ kubeconfig_array[item] | b64decode }}"
+    content: "{{ kubeconfig_array.kubeconfig | b64decode }}"
     dest: "/root/.kube/worker_config_{{ regions_array_code[item] }}"
     mode: '644'
   loop: "{{ range(0, kubeconfig_array | length) }}"
-  loop_control:
-    loop_var: item
     
