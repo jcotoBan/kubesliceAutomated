@@ -108,9 +108,9 @@
   delay: 30
   with_items: "{{ regions_array_code }}"
 
-- name: List all keys
+- name: Debug kubeconfig_array
   debug:
-    msg: "{{ kubeconfig_array | dict2items | map(attribute='key') | list }}"
+    var: kubeconfig_array
 
 - name: Save workers kubeconfig to a File
   copy:
