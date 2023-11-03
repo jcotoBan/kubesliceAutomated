@@ -48,3 +48,18 @@
     kubeconfig: /root/.kube/controller_config
     state: present
     src: /tmp/project.yml
+
+#Clusters registration
+
+- name: adding registration template
+  template:
+    mode: '0600'
+    src: templates/registration.yml.j2
+    dest: /tmp/registration.yml
+
+- name: create registration resource
+  kubernetes.core.k8s:
+    kubeconfig: /root/.kube/controller_config
+    state: present
+    src: /tmp/registration.yml
+

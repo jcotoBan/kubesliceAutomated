@@ -11,4 +11,4 @@
     - k8s_tools
     - LKE
     - kubeslice_prereq
-    - kubeslice_controller
+    - kubeslice_components

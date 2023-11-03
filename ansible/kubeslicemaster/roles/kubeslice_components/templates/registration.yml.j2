@@ -1,0 +1,15 @@
+{% for item in regions_array_code %}
+apiVersion: controller.kubeslice.io/v1alpha1
+kind: Cluster
+metadata:
+  name: {{worker_cluster_label ~ '-' ~ item }}
+  namespace: kubeslice-{{ kubeslice_project }} 
+spec:
+  networkInterface: eth0
+  clusterProperty:
+    geoLocation:
+      cloudProvider: "Akamai Connected Cloud"
+      cloudRegion: "{{ item }}"
+---
+{% endfor %}
+

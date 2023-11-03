@@ -36,7 +36,6 @@
   set_fact:
     controller_cluster_dc_code: "{{ regions_map[controller_cluster_dc] }}"
 
-
 - name: Create Manager cluster
   linode.cloud.lke_cluster:
     label: "{{ controller_cluster_label }}"
@@ -76,7 +75,6 @@
   set_fact:
     controller_endpoint: "{{ cluster_info_output.stdout }}"
     
-
 #Workers setup
 
 - name: Create array from workers_dcs
@@ -115,3 +113,13 @@
     mode: '644'
   loop: "{{ kubeconfig_array.results }}"
     
+
+#Adding kubeconfig env for each worker
+- name: create kubeconfig string
+  set_fact:
+    kubeconfig_string: "{{ regions_array_code | map('regex_replace', '^(.*)$', '~/.kube/worker_config_\\1') | join(':') }}"
+
+- name: setting up kubeconfig
+  shell:
+    cmd: |
+      echo 'export "{{ kubeconfig_string }}"' >> ~/.bashrc
