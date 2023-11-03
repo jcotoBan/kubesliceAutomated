@@ -111,7 +111,7 @@
 - name: Save workers kubeconfig to a File
   copy:
     content: "{{ item.kubeconfig | b64decode }}"
-    dest: "/root/.kube/worker_config_{{ regions_array_code[item.item] }}"
+    dest: "/root/.kube/worker_config_{{ item.item }}"
     mode: '644'
   loop: "{{ kubeconfig_array.results }}"
     
