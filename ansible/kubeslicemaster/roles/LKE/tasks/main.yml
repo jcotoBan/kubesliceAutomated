@@ -46,7 +46,7 @@
       count: "{{ controller_cluster_nodes }}"
     state: present
 
-- name: Fetch Kubeconfig
+- name: fetch controller kubeconfig
   linode.cloud.lke_cluster_info:
     label: "{{ controller_cluster_label }}"
   register: output_controller
@@ -98,7 +98,7 @@
   with_items: "{{ regions_array_code }}"
 
 
-- name: Fetch Kubeconfig
+- name: fetch workers kubeconfig
   linode.cloud.lke_cluster_info:
     label: "{{ worker_cluster_label ~ '-' ~ item }}"
   register: kubeconfig_array

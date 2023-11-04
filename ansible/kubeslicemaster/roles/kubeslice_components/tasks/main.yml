@@ -1,4 +1,4 @@
-#controller and manager install
+#controller components
 
 - name: adding controller template
   template:
@@ -49,7 +49,7 @@
     state: present
     src: /tmp/project.yml
 
-#Clusters registration
+#Clusters Components
 
 - name: adding registration template
   template:
@@ -62,4 +62,50 @@
     kubeconfig: /root/.kube/controller_config
     state: present
     src: /tmp/registration.yml
+
+- name: letting registration install resource complete
+  ansible.builtin.pause:
+    minutes: 2
+
+#Gathering sliceoperator required data
+
+##workers secrets array
+
+- name: get the secret for each worker from the controller
+  shell: kubectl get secret -n kubeslice-"{{ kubeslice_project }}" --kubeconfig /root/.kube/worker_config_"{{ item }}" | awk {' print $2'} | grep kubeslice-rbac-worker-"{{worker_cluster_label ~ '-' ~ item }}"
+  register: workers_controller_secrets
+  with_items: "{{ regions_array_code }}"
+
+- name: namespace secret for each worker from the controller
+  shell: kubectl get secrets kubeslice-"{{ workers_controller_secrets }}" -n kubeslice-"{{ kubeslice_project }}" --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.namespace}
+  register: workers_controller_namespaces
+  with_items: "{{ workers_controller_secrets }}"
+
+- name: endpoint secret for each worker from the controller
+  shell: kubectl get secrets kubeslice-"{{ workers_controller_secrets }}" -n kubeslice-"{{ kubeslice_project }}" --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.controllerEndpoint}
+  register: workers_controller_endpoints
+  with_items: "{{ workers_controller_secrets }}"
+
+- name: ca_crt secret for each worker from the controller
+  shell: kubectl get secrets kubeslice-"{{ workers_controller_secrets }}" -n kubeslice-"{{ kubeslice_project }}" --kubeconfig=/root/.kube/controller_config -o jsonpath=jsonpath='{.data.ca\.crt}
+  register: workers_controller_ca_crts
+  with_items: "{{ workers_controller_secrets }}"
+
+- name: token secret for each worker from the controller
+  shell: kubectl get secrets kubeslice-"{{ workers_controller_secrets }}" -n kubeslice-"{{ kubeslice_project }}" --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.token})
+  register: workers_controller_tokens
+  with_items: "{{ workers_controller_secrets }}"
+
+##Workers endpoints
+
+- name: gathering clusters endpoints info
+  shell: kubectl cluster-info --kubeconfig=/root/.kube/worker_config_{{ item }} | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
+  register: workers_endpoints
+  with_items: "{{ regions_array_code }}"
+
+- name: adding sliceOperator template
+  template:
+    mode: '0600'
+    src: templates/sliceOperators.yml.j2
+    dest: /tmp/sliceOperators.yml  
 
