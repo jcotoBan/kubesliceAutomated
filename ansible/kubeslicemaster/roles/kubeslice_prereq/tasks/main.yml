@@ -21,7 +21,7 @@
 #Gateway labels
 
 - name: Label all nodes
-  command: kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_"{{ item }}"
+  command: "kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_{{ item }}"
   with_items: "{{ regions_array_code }}"
 
 
