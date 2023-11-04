@@ -72,7 +72,7 @@
 ##workers secrets array
 
 - name: get the secret for each worker from the controller
-  shell: kubectl get secret -n kubeslice-"{{ kubeslice_project }}" --kubeconfig /root/.kube/worker_config-"{{ item }}" | awk {' print $2'} | grep kubeslice-rbac-worker-"{{worker_cluster_label ~ '-' ~ item }}"
+  shell: kubectl get secret -n kubeslice-"{{ kubeslice_project }}" --kubeconfig /root/.kube/worker_config_"{{ item }}" | awk {' print $2'} | grep kubeslice-rbac-worker-"{{worker_cluster_label ~ '-' ~ item }}"
   register: workers_controller_secrets
   with_items: "{{ regions_array_code }}"
 
@@ -99,7 +99,7 @@
 ##Workers endpoints
 
 - name: gathering clusters endpoints info
-  shell: kubectl cluster-info --kubeconfig=/root/.kube/worker_config-"{{ item }}" | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
+  shell: kubectl cluster-info --kubeconfig=/root/.kube/worker_config_"{{ item }}" | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
   register: workers_endpoints
   with_items: "{{ regions_array_code }}"
 

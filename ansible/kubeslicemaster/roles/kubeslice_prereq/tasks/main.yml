@@ -21,7 +21,7 @@
 #Gateway labels
 
 - name: Label all nodes
-  command: kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config-"{{ item }}"
+  command: kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_"{{ item }}"
   with_items: "{{ regions_array_code }}"
 
 
@@ -33,7 +33,7 @@
     chart_ref: kubeslice/istio-base
     release_namespace: istio-system
     create_namespace: true
-    kubeconfig: /root/.kube/worker_config-"{{ item }}"
+    kubeconfig: /root/.kube/worker_config_"{{ item }}"
   with_items: "{{ regions_array_code }}"
 
 - name: deploy istio discovery
@@ -41,5 +41,5 @@
     name: istiod
     chart_ref: kubeslice/istio-discovery
     release_namespace: istio-system
-    kubeconfig: /root/.kube/worker_config-"{{ item }}"
+    kubeconfig: /root/.kube/worker_config_"{{ item }}"
   with_items: "{{ regions_array_code }}"
