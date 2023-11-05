@@ -37,6 +37,8 @@
     create_namespace: true
     kubeconfig: "/root/.kube/worker_config_{{ item }}"
   with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
   retries: 20
   delay: 30
 
@@ -47,5 +49,7 @@
     release_namespace: istio-system
     kubeconfig: "/root/.kube/worker_config_{{ item }}"
   with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
   retries: 20
   delay: 30
