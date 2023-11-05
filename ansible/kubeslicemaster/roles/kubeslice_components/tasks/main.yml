@@ -87,28 +87,28 @@
   delay: 30
 
 - name: namespace secret for each worker from the controller
-  shell: "kubectl get secrets {{ workers_controller_secrets }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.namespace}"
+  shell: "kubectl get secrets {{ item }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.namespace}"
   register: workers_controller_namespaces
-  with_items: "{{ workers_controller_secrets.stdout }}" #Remember to pass stdout
+  with_items: "{{ workers_controller_secrets.stdout }}"
   retries: 20
   delay: 30
 
 - name: endpoint secret for each worker from the controller
-  shell: "kubectl get secrets {{ workers_controller_secrets }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.controllerEndpoint}"
+  shell: "kubectl get secrets {{ item }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.controllerEndpoint}"
   register: workers_controller_endpoints
   with_items: "{{ workers_controller_secrets.stdout }}"
   retries: 20
   delay: 30
 
 - name: ca_crt secret for each worker from the controller
-  shell: "kubectl get secrets {{ workers_controller_secrets }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath=jsonpath='{.data.ca\\.crt}'"
+  shell: "kubectl get secrets {{ item }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath=jsonpath='{.data.ca\\.crt}'"
   register: workers_controller_ca_crts
   with_items: "{{ workers_controller_secrets.stdout }}"
   retries: 20
   delay: 30
 
 - name: token secret for each worker from the controller
-  shell: "kubectl get secrets {{ workers_controller_secrets }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.token})"
+  shell: "kubectl get secrets {{ item }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.token})"
   register: workers_controller_tokens
   with_items: "{{ workers_controller_secrets.stdout }}"
   retries: 20
