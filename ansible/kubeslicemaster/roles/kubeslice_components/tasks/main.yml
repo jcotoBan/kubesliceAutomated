@@ -15,6 +15,8 @@
     kubeconfig: /root/.kube/controller_config
     values_files:
       - /tmp/controller.yml
+  retries: 20
+  delay: 30
 
 - name: adding manager template
   template:
@@ -30,6 +32,8 @@
     kubeconfig: /root/.kube/controller_config
     values_files:
       - /tmp/manager.yml
+  retries: 20
+  delay: 30
 
 # project install
 
@@ -48,6 +52,8 @@
     kubeconfig: /root/.kube/controller_config
     state: present
     src: /tmp/project.yml
+  retries: 20
+  delay: 30
 
 #Clusters Components
 
@@ -62,6 +68,8 @@
     kubeconfig: /root/.kube/controller_config
     state: present
     src: /tmp/registration.yml
+  retries: 20
+  delay: 30
 
 - name: letting registration install resource complete
   ansible.builtin.pause:
