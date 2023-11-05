@@ -1,12 +1,12 @@
 {% for index in range(regions_array_code | length) %}
 controllerSecret:
-  namespace: {{ workers_controller_namespaces[index] }} 
-  endpoint: {{ workers_controller_endpoints[index] }}
-  ca.crt: {{ workers_controller_ca_crts[index] }}
-  token: {{ workers_controller_tokens[index] }}
+  namespace: {{ workers_controller_namespaces[index].results.stdout }} 
+  endpoint: {{ workers_controller_endpoints[index].results.stdout }}
+  ca.crt: {{ workers_controller_ca_crts[index].results.stdout }}
+  token: {{ workers_controller_tokens[index].results.stdout }}
 
 cluster:
-  name: {{worker_cluster_label ~ '-' ~ item }}
+  name: {{worker_cluster_label ~ '-' ~ regions_array_code[index] }}
   endpoint: {{ workers_endpoints[index] }}
 
 netop:
