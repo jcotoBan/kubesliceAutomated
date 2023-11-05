@@ -72,7 +72,7 @@
 ##workers secrets array
 
 - name: get the secret for each worker from the controller
-  shell: "kubectl get secret -n kubeslice-{{ kubeslice_project }} --kubeconfig /root/.kube/worker_config_{{ item }} | awk {' print $2'} | grep kubeslice-rbac-worker-{{worker_cluster_label ~ '-' ~ item }}"
+  shell: "kubectl get secrets -n kubeslice-{{ kubeslice_project }} --kubeconfig /root/.kube/controller_config | awk {' print $2'} | grep kubeslice-rbac-worker-{{worker_cluster_label ~ '-' ~ item }}"
   register: workers_controller_secrets
   with_items: "{{ regions_array_code }}"
 
