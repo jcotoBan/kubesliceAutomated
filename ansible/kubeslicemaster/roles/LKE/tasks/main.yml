@@ -30,17 +30,6 @@
     path: /root/.kube/
     state: directory
 
-#Installing yq
-
-- name: add the PPA repository
-  apt_repository:
-    repo: ppa:rmescandon/yq
-    state: present
-
-- name: update Package Lists
-  apt:
-    update_cache: yes
-
 - name: Install yq
   apt:
     name: yq

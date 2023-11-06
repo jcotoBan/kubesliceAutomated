@@ -137,7 +137,7 @@
 #slice operators deploy
 
 - name: install slice operators
-  shell: cat /tmp/sliceOperators.yml | yq e 'select(.cluster.name =="{{worker_cluster_label ~ '-' ~ item }}")' - | kubectl apply -f -
+  shell: cat /tmp/sliceOperators.yml | yq e 'select(.cluster.name =="{{worker_cluster_label ~ '-' ~ item }}")' - | kubectl apply -f - --kubeconfig "/root/.kube/worker_config_{{ item }}"
   register: install_result
   with_items: "{{ regions_array_code }}"
   retries: 20
