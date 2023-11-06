@@ -45,7 +45,6 @@
   apt:
     name: yq
     state: present
-  notify: update Package Lists
 
 #Controller
 
