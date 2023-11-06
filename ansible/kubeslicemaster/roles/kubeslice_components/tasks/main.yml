@@ -134,11 +134,27 @@
     src: templates/sliceOperators.yml.j2
     dest: /tmp/sliceOperators.yml  
 
-#slice operators deploy
 
-- name: install slice operators
-  shell: cat /tmp/sliceOperators.yml | yq e 'select(.cluster.name =="{{worker_cluster_label ~ '-' ~ item }}")' - | kubectl apply -f - --kubeconfig "/root/.kube/worker_config_{{ item }}"
+- name: spliting the values from the sliceOperator
+  shell: cat /tmp/sliceOperators.yml | yq e 'select(.cluster.name =="{{worker_cluster_label ~ '-' ~ item }}")' - >> /tmp/sliceop_{{ item }}.yml
   register: install_result
   with_items: "{{ regions_array_code }}"
+  retries: 20
+  delay: 30
+
+#slice operators deploy
+
+- name: deploy kubeslice-operator on workers
+  kubernetes.core.helm:
+    name: kubeslice-worker
+    chart_ref: kubeslice/kubeslice-worker
+    release_namespace: kubeslice-system
+    create_namespace: true
+    kubeconfig: "/root/.kube/worker_config_{{ item }}"
+    values_files:
+    - /tmp/sliceop_"{{ item }}".yml
+  with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
   retries: 20
   delay: 30
