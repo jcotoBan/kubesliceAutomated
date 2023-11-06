@@ -40,9 +40,6 @@
 - name: update Package Lists
   apt:
     update_cache: yes
-  when: not update_cache.results[0].changed
-  changed_when: false
-  register: update_cache
 
 - name: Install yq
   apt:
