@@ -133,8 +133,6 @@
   with_items:
     - workers_controller_secrets
 
-
-
 - name: adding sliceOperator template
   template:
     mode: '0600'
