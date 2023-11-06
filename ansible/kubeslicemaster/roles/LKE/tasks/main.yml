@@ -121,4 +121,4 @@
 - name: setting up kubeconfig
   shell:
     cmd: |
-      "echo 'export KUBECONFIG=~/.kube/controller_config:{{ kubeconfig_string }}' >> ~/.bashrc"
+      echo 'export KUBECONFIG=~/.kube/controller_config:{{ kubeconfig_string }}' >> ~/.bashrc
