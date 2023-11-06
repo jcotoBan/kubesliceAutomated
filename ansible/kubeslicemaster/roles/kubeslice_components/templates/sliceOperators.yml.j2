@@ -7,7 +7,7 @@ controllerSecret:
 
 cluster:
   name: {{worker_cluster_label ~ '-' ~ regions_array_code[index] }}
-  endpoint: {{ workers_endpoints.results[index] }}
+  endpoint: {{ workers_endpoints.results[index].stdout }}
 
 netop:
   networkInterface: eth0

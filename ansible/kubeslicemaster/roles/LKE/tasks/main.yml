@@ -30,6 +30,27 @@
     path: /root/.kube/
     state: directory
 
+#Installing yq
+
+- name: add the PPA repository
+  apt_repository:
+    repo: ppa:rmescandon/yq
+    state: present
+  notify: update Package Lists
+
+- name: update Package Lists
+  apt:
+    update_cache: yes
+  when: not update_cache.results[0].changed
+  changed_when: false
+  register: update_cache
+
+- name: Install yq
+  apt:
+    name: yq
+    state: present
+  notify: update Package Lists
+
 #Controller
 
 - name: replace region for code value
@@ -58,12 +79,6 @@
     content: "{{ output_controller.kubeconfig | b64decode }}"
     dest: /root/.kube/controller_config
     mode: '644'
-
-#Adding kubeconfig env for controller
-- name: setting up kubeconfig
-  shell:
-    cmd: |
-      echo 'export KUBECONFIG=~/.kube/controller_config' >> ~/.bashrc
 
 #Adding controller_endpoint var
 
@@ -122,4 +137,4 @@
 - name: setting up kubeconfig
   shell:
     cmd: |
-      echo 'export "{{ kubeconfig_string }}"' >> ~/.bashrc
+      "echo 'export KUBECONFIG=~/.kube/controller_config:{{ kubeconfig_string }}' >> ~/.bashrc"
