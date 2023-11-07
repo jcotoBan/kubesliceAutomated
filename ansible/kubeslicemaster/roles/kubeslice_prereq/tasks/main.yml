@@ -27,9 +27,10 @@
 - name: Label all nodes
   command: "kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_{{ item }}"
   with_items: "{{ regions_array_code }}"
+  register: command_result
   retries: 3
   delay: 10
-  until: result.rc == 0
+  until: command_result.rc == 0
 
 
 #Deploy istio on workers
