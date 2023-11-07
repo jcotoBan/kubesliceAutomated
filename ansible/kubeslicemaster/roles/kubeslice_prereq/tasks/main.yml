@@ -30,7 +30,7 @@
   register: command_result
   retries: 3
   delay: 10
-  until: command_result.rc == 0
+  until: command_result.stdout != ''
 
 
 #Deploy istio on workers
