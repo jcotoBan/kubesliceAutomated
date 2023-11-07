@@ -22,15 +22,31 @@
 
 #Workers setup
 
+#Install metrics api
+
+- name: adding metrics api template
+  template:
+    mode: '0600'
+    src: templates/metricsapi.yml.j2
+    dest: /tmp/metricsapi.yml
+
+- name: installing metrics api
+  shell: "kubectl apply -f /tmp/metricsapi.yml --kubeconfig /root/.kube/worker_config_{{ item }}"
+  register: apply_result
+  with_items: "{{ regions_array_code }}"
+  retries: 3
+  delay: 10
+  until: apply_result.stdout != ''
+
 #Gateway labels
 
 - name: Label all nodes
   command: "kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_{{ item }}"
   with_items: "{{ regions_array_code }}"
-  register: command_result
+  register: label_result
   retries: 3
   delay: 10
-  until: command_result.stdout != ''
+  until: label_result.stdout != ''
 
 
 #Deploy istio on workers
