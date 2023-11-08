@@ -37,6 +37,7 @@
   retries: 3
   delay: 10
   until: apply_result.stdout != ''
+  ignore_errors: true
 
 #Gateway labels
 
