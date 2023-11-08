@@ -25,6 +25,16 @@
       "Singapore/SG" : "ap-south"
       "Frankfurt/DE" : "eu-central" 
 
+- name: Defining region coordinates
+  set_fact:
+    region_coordinates:
+      fr-par:
+        latitude: "48.864716"
+        longitude: "2.349014"
+      br-gru:
+        latitude: "-23.533773"
+        longitude: "-46.625290"
+
 - name: Create Kubeconfig directory if it does not exist
   file:
     path: /root/.kube/
