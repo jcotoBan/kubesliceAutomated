@@ -1,0 +1,164 @@
+#controller components
+
+- name: adding controller template
+  template:
+    mode: '0600'
+    src: templates/controller.yml.j2
+    dest: /tmp/controller.yml
+
+- name: deploy kubeslice controller with custom values
+  kubernetes.core.helm:
+    name: kubeslice-controller
+    chart_ref: kubeslice/kubeslice-controller
+    release_namespace: kubeslice-controller
+    create_namespace: true
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/controller.yml
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
+
+- name: adding manager template
+  template:
+    mode: '0600'
+    src: templates/manager.yml.j2
+    dest: /tmp/manager.yml
+
+- name: install kubeslice manager
+  kubernetes.core.helm:
+    name: kubeslice-ui
+    chart_ref: kubeslice/kubeslice-ui
+    release_namespace: kubeslice-controller
+    kubeconfig: /root/.kube/controller_config
+    values_files:
+      - /tmp/manager.yml
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
+
+# project install
+
+- name: pause to let helm charts install correctly
+  ansible.builtin.pause:
+    minutes: 4
+
+- name: adding project template
+  template:
+    mode: '0600'
+    src: templates/project.yml.j2
+    dest: /tmp/project.yml
+
+- name: create project resource
+  kubernetes.core.k8s:
+    kubeconfig: /root/.kube/controller_config
+    state: present
+    src: /tmp/project.yml
+  retries: 20
+  delay: 30
+
+#Clusters Components
+
+- name: adding registration template
+  template:
+    mode: '0600'
+    src: templates/registration.yml.j2
+    dest: /tmp/registration.yml
+
+- name: create registration resource
+  kubernetes.core.k8s:
+    kubeconfig: /root/.kube/controller_config
+    state: present
+    src: /tmp/registration.yml
+  retries: 20
+  delay: 30
+
+- name: letting registration install resource complete
+  ansible.builtin.pause:
+    minutes: 2
+
+#Gathering sliceoperator required data
+
+##workers secrets array
+
+- name: get the secret for each worker from the controller
+  shell: "kubectl get secrets -n kubeslice-{{ kubeslice_project }} --kubeconfig /root/.kube/controller_config | awk {' print $1'} | grep kubeslice-rbac-worker-{{worker_cluster_label ~ '-' ~ item }}"
+  register: workers_controller_secrets
+  with_items: "{{ regions_array_code }}"
+  retries: 20
+  delay: 30
+
+- name: namespace secret for each worker from the controller
+  shell: "kubectl get secrets {{ item.stdout }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.namespace}"
+  register: workers_controller_namespaces
+  with_items: "{{ workers_controller_secrets.results }}"
+  retries: 20
+  delay: 30
+
+- name: endpoint secret for each worker from the controller
+  shell: "kubectl get secrets {{ item.stdout }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.controllerEndpoint}"
+  register: workers_controller_endpoints
+  with_items: "{{ workers_controller_secrets.results }}"
+  retries: 20
+  delay: 30
+
+- name: ca_crt secret for each worker from the controller
+  shell: "kubectl get secrets {{ item.stdout }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath='{.data.ca\\.crt}'"
+  register: workers_controller_ca_crts
+  with_items: "{{ workers_controller_secrets.results }}"
+  retries: 20
+  delay: 30
+
+- name: token secret for each worker from the controller
+  shell: "kubectl get secrets {{ item.stdout }} -n kubeslice-{{ kubeslice_project }} --kubeconfig=/root/.kube/controller_config -o jsonpath={.data.token}"
+  register: workers_controller_tokens
+  with_items: "{{ workers_controller_secrets.results }}"
+  retries: 20
+  delay: 30
+
+##Workers endpoints
+
+- name: gathering clusters endpoints info
+  shell: kubectl cluster-info --kubeconfig="/root/.kube/worker_config_{{ item }}" | grep 'Kubernetes control plane' | awk '{ print $7}' | sed 's/\x1B\[[0-9;]*[mK]//g' | tr -d '\n'
+  register: workers_endpoints
+  with_items: "{{ regions_array_code }}"
+  retries: 20
+  delay: 30
+
+
+- name: adding sliceOperator template
+  template:
+    mode: '0600'
+    src: templates/sliceOperators.yml.j2
+    dest: /tmp/sliceOperators.yml  
+
+
+- name: spliting the values from the sliceOperator
+  shell: cat /tmp/sliceOperators.yml | yq e 'select(.cluster.name =="{{worker_cluster_label ~ '-' ~ item }}")' - >> /tmp/sliceop_{{ item }}.yml
+  register: install_result
+  with_items: "{{ regions_array_code }}"
+  retries: 20
+  delay: 30
+
+#slice operators deploy
+
+- name: deploy kubeslice-operator on workers
+  kubernetes.core.helm:
+    name: kubeslice-worker
+    chart_ref: kubeslice/kubeslice-worker
+    release_namespace: kubeslice-system
+    create_namespace: true
+    kubeconfig: "/root/.kube/worker_config_{{ item }}"
+    values_files:
+    - "/tmp/sliceop_{{ item }}.yml"
+  with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
+
+- name: letting sliceOperators install complete
+  ansible.builtin.pause:
+    minutes: 3

@@ -1,0 +1,15 @@
+#Create default slices
+
+- name: adding slices template
+  template:
+    mode: '0600'
+    src: templates/slices.yml.j2
+    dest: /tmp/slices.yml
+
+- name: creating slices
+  shell: "kubectl apply -f /tmp/slices.yml --kubeconfig /root/.kube/controller_config"
+  register: apply_result
+  with_items: "{{ regions_array_code }}"
+  retries: 3
+  delay: 10
+  until: apply_result.stdout != ''

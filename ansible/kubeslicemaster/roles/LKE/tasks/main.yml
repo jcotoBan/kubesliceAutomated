@@ -1,21 +1,57 @@
-#Controller
+- name: Set regions code to name 
+  set_fact:
+    regions_map:
+      "Mumbai/IN" : "ap-west"
+      "Toronto/CA" : "ca-central"
+      "Sydney/AU" : "ap-southeast"
+      "Washington/DC" : "us-iad"
+      "Chicago/IL" : "us-ord"
+      "Paris/FR" : "fr-par"
+      "Seattle/WA" : "us-sea"
+      "Sao Paulo/BR" : "br-gru"
+      "Amsterdam/NL" : "nl-ams"
+      "Stockholm/SE" : "se-sto"
+      "Chennai/IN" : "in-maa"
+      "Osaka/JP" : "jp-osa"
+      "Milan/IT" : "it-mil"
+      "Miami/FL" : "us-mia"
+      "Jakarta/ID" : "id-cgk"
+      "Los Angeles/CA" : "us-lax"
+      "Dallas/TX" : "us-central"
+      "Fremont/CA" : "us-west"
+      "Atlanta/GA" : "us-southeast"
+      "Newark/NJ" : "us-east"
+      "London/UK" : "eu-west"
+      "Singapore/SG" : "ap-south"
+      "Frankfurt/DE" : "eu-central" 
+
 - name: Create Kubeconfig directory if it does not exist
   file:
     path: /root/.kube/
     state: directory
 
+- name: Install yq
+  apt:
+    name: yq
+    state: present
+
+#Controller
+
+- name: replace region for code value
+  set_fact:
+    controller_cluster_dc_code: "{{ regions_map[controller_cluster_dc] }}"
 
 - name: Create Manager cluster
   linode.cloud.lke_cluster:
     label: "{{ controller_cluster_label }}"
-    region: "{{ controller_cluster_dc }}"
+    region: "{{ controller_cluster_dc_code }}"
     k8s_version: "{{ controller_cluster_version }}"
     node_pools:
     - type: "{{ controller_cluster_node_plan }}"
       count: "{{ controller_cluster_nodes }}"
     state: present
 
-- name: Fetch Kubeconfig
+- name: fetch controller kubeconfig
   linode.cloud.lke_cluster_info:
     label: "{{ controller_cluster_label }}"
   register: output_controller
@@ -28,12 +64,6 @@
     dest: /root/.kube/controller_config
     mode: '644'
 
-#Adding kubeconfig env
-- name: setting up kubeconfig
-  shell:
-    cmd: |
-      echo 'export KUBECONFIG=~/.kube/controller_config' >> ~/.bashrc
-
 #Adding controller_endpoint var
 
 - name: Run kubectl cluster-info
@@ -44,3 +74,51 @@
   set_fact:
     controller_endpoint: "{{ cluster_info_output.stdout }}"
     
+#Workers setup
+
+- name: Create array from workers_dcs
+  set_fact:
+    regions_array: "{{ workers_dcs.split(',') }}"
+
+- name: region array for workers replace for code of region
+  set_fact:
+    regions_array_code: "{{ regions_array | map('extract', regions_map) | list }}"
+
+
+- name: create worker clusters
+  linode.cloud.lke_cluster:
+    label: "{{ worker_cluster_label ~ '-' ~ item }}"
+    region: "{{ item }}"
+    k8s_version: "{{ worker_cluster_version }}"
+    node_pools:
+    - type: "{{ worker_cluster_node_plan }}"
+      count: "{{ worker_cluster_nodes }}"
+    state: present
+  with_items: "{{ regions_array_code }}"
+
+
+- name: fetch workers kubeconfig
+  linode.cloud.lke_cluster_info:
+    label: "{{ worker_cluster_label ~ '-' ~ item }}"
+  register: kubeconfig_array
+  retries: 20
+  delay: 30
+  with_items: "{{ regions_array_code }}"
+
+- name: Save workers kubeconfig to a File
+  copy:
+    content: "{{ item.kubeconfig | b64decode }}"
+    dest: "/root/.kube/worker_config_{{ item.item }}"
+    mode: '644'
+  loop: "{{ kubeconfig_array.results }}"
+    
+
+#Adding kubeconfig env for each worker
+- name: create kubeconfig string
+  set_fact:
+    kubeconfig_string: "{{ regions_array_code | map('regex_replace', '^(.*)$', '~/.kube/worker_config_\\1') | join(':') }}"
+
+- name: setting up kubeconfig
+  shell:
+    cmd: |
+      echo 'export KUBECONFIG=~/.kube/controller_config:{{ kubeconfig_string }}' >> ~/.bashrc

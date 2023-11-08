@@ -8,8 +8,6 @@
 - name: update helm repo
   command: helm repo update
 
-#Prometheus install
-
 - name: deploy prometheus
   kubernetes.core.helm:
     name: prometheus
@@ -17,3 +15,64 @@
     release_namespace: monitoring
     create_namespace: true
     kubeconfig: /root/.kube/controller_config
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
+
+#Workers setup
+
+#Install metrics api
+
+- name: adding metrics api template
+  template:
+    mode: '0600'
+    src: templates/metricsapi.yml.j2
+    dest: /tmp/metricsapi.yml
+
+- name: installing metrics api
+  shell: "kubectl apply -f /tmp/metricsapi.yml --kubeconfig /root/.kube/worker_config_{{ item }}"
+  register: apply_result
+  with_items: "{{ regions_array_code }}"
+  retries: 3
+  delay: 10
+  until: apply_result.stdout != ''
+
+#Gateway labels
+
+- name: Label all nodes
+  command: "kubectl label nodes --all kubeslice.io/node-type=gateway --kubeconfig /root/.kube/worker_config_{{ item }}"
+  with_items: "{{ regions_array_code }}"
+  register: label_result
+  retries: 3
+  delay: 10
+  until: label_result.stdout != ''
+  ignore_errors: true
+
+
+#Deploy istio on workers
+
+- name: deploy istio base
+  kubernetes.core.helm:
+    name: istio-base
+    chart_ref: kubeslice/istio-base
+    release_namespace: istio-system
+    create_namespace: true
+    kubeconfig: "/root/.kube/worker_config_{{ item }}"
+  with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
+
+- name: deploy istio discovery
+  kubernetes.core.helm:
+    name: istiod
+    chart_ref: kubeslice/istio-discovery
+    release_namespace: istio-system
+    kubeconfig: "/root/.kube/worker_config_{{ item }}"
+  with_items: "{{ regions_array_code }}"
+  register: helm_result
+  until: helm_result is succeeded
+  retries: 20
+  delay: 30
