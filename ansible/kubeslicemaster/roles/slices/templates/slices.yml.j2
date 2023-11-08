@@ -1,10 +1,11 @@
+#jinja2: lstrip_blocks: "True"
 apiVersion: controller.kubeslice.io/v1alpha1
 kind: SliceConfig
 metadata: 
   name: production
   namespace: kubeslice-{{ kubeslice_project }}
 spec:
-  sliceSubnet: 192.168.0.0/24
+  sliceSubnet: 192.168.0.0/16
   maxClusters: 16       #Ex: 5. By default, the maxClusters value is set to 16
   sliceType: Application
   sliceGatewayProvider:
@@ -36,10 +37,10 @@ spec:
 apiVersion: controller.kubeslice.io/v1alpha1
 kind: SliceConfig
 metadata: 
-  name: production
+  name: testing
   namespace: kubeslice-{{ kubeslice_project }}
 spec:
-  sliceSubnet: 192.168.1.0/24
+  sliceSubnet: 192.168.0.0/16
   maxClusters: 16       #Ex: 5. By default, the maxClusters value is set to 16
   sliceType: Application
   sliceGatewayProvider:
