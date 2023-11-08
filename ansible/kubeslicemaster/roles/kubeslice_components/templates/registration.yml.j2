@@ -10,8 +10,8 @@ spec:
     geoLocation:
       cloudProvider: "Akamai Connected Cloud"
       cloudRegion: "{{ item }}"
-      latitude: {{ region_coordinates[item].latitude }}
-      longitude: {{ region_coordinates[item].longitude }}
+      latitude: "{{ region_coordinates[item].latitude }}"
+      longitude: "{{ region_coordinates[item].longitude }}"
 ---
 {% endfor %}
 
