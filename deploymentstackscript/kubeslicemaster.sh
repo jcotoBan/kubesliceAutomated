@@ -14,11 +14,18 @@ trap "cleanup $? $LINENO" EXIT
 
 ##Controller kubernetes cluster
 #<UDF name="controller_cluster_label" label="Controller cluster label">
-#<UDF name="controller_cluster_dc" Label="The datacenter for your Controller cluster" oneOf="ap-west,ca-central,ap-southeast,us-iad,us-ord,fr-par,us-sea,br-gru,nl-ams,se-sto,in-maa,jp-osa,it-mil,us-mia,id-cgk,us-lax,us-central,us-west,us-southeast,us-east,eu-west,ap-south,eu-central" default="us-sea">
+#<UDF name="controller_cluster_dc" Label="The datacenter for your Controller cluster" oneOf="Mumbai/IN,Toronto/CA,Sydney/AU,Washington/DC,Chicago/IL,Paris/FR,Seattle/WA,Sao Paulo/BR,Amsterdam/NL,Stockholm/SE,Chennai/IN,Osaka/JP,Milan/IT,Miami/FL,Jakarta/ID,Los Angeles/CA,Dallas/TX,Fremont/CA,Atlanta/GA,Newark/NJ,London/UK,Singapore/SG,Frankfurt/DE" default="Seattle/WA">
 #<UDF name="controller_cluster_version" label="Controller kubernetes version" oneOf="1.26,1.27" default="1.27">
 #<UDF name="controller_cluster_node_plan" Label="The plan for your Controller nodes" oneOf="g6-dedicated-2,g6-dedicated-4,g6-dedicated-8,g6-dedicated-16,g6-dedicated-32,g6-dedicated-48,g6-dedicated-50,g6-dedicated-56,g6-dedicated-64" default="g6-dedicated-4">
 #<UDF name="controller_cluster_nodes" label="Number of nodes for Controller cluster">
 
+
+##Regions_workers
+#<UDF name="worker_cluster_label" label="worker cluster label, each cluster will be named label+region">
+#<UDF name="workers_dcs" Label="The regions where you want to deploy your worker clusters" manyOf="Mumbai/IN,Toronto/CA,Sydney/AU,Washington/DC,Chicago/IL,Paris/FR,Seattle/WA,Sao Paulo/BR,Amsterdam/NL,Stockholm/SE,Chennai/IN,Osaka/JP,Milan/IT,Miami/FL,Jakarta/ID,Los Angeles/CA,Dallas/TX,Fremont/CA,Atlanta/GA,Newark/NJ,London/UK,Singapore/SG,Frankfurt/DE">
+#<UDF name="worker_cluster_version" label="worker kubernetes version" oneOf="1.26,1.27" default="1.27">
+#<UDF name="worker_cluster_node_plan" Label="The plan for your worker nodes" oneOf="g6-dedicated-2,g6-dedicated-4,g6-dedicated-8,g6-dedicated-16,g6-dedicated-32,g6-dedicated-48,g6-dedicated-50,g6-dedicated-56,g6-dedicated-64" default="g6-dedicated-4">
+#<UDF name="worker_cluster_nodes" label="Number of nodes for worker cluster">
 
 ## Kubeslice project
 #<UDF name="kubeslice_project" label="Kubeslice project name">
@@ -75,9 +82,7 @@ function udf {
 
   #LKE vars
 
-  if [[ -n ${KUBESLICE_PROJECT} ]]; then
-    echo "kubeslice_project: ${KUBESLICE_PROJECT}" >> ${group_vars};
-  fi
+  #Controller
 
   if [[ -n ${CONTROLLER_CLUSTER_LABEL} ]]; then
     echo "controller_cluster_label: ${CONTROLLER_CLUSTER_LABEL}" >> ${group_vars};
@@ -99,8 +104,34 @@ function udf {
     echo "controller_cluster_nodes: ${CONTROLLER_CLUSTER_NODES}" >> ${group_vars};
   fi
 
+  #worker
+
+  if [[ -n ${WORKERS_DCS} ]]; then
+    echo "workers_dcs: ${WORKERS_DCS}" >> ${group_vars};
+  fi
+
+  if [[ -n ${WORKER_CLUSTER_LABEL} ]]; then
+    echo "worker_cluster_label: ${WORKER_CLUSTER_LABEL}" >> ${group_vars};
+  fi
+
+    if [[ -n ${WORKER_CLUSTER_VERSION} ]]; then
+    echo "worker_cluster_version: ${WORKER_CLUSTER_VERSION}" >> ${group_vars};
+  fi
+
+  if [[ -n ${WORKER_CLUSTER_NODE_PLAN} ]]; then
+    echo "worker_cluster_node_plan: ${WORKER_CLUSTER_NODE_PLAN}" >> ${group_vars};
+  fi
+
+  if [[ -n ${WORKER_CLUSTER_NODES} ]]; then
+    echo "worker_cluster_nodes: ${WORKER_CLUSTER_NODES}" >> ${group_vars};
+  fi
+
 
   # Kubeslice vars
+
+  if [[ -n ${KUBESLICE_PROJECT} ]]; then
+    echo "kubeslice_project: ${KUBESLICE_PROJECT}" >> ${group_vars};
+  fi
 
   if [[ -n ${LICENSE_USERNAME} ]]; then
     echo "license_username: ${LICENSE_USERNAME}" >> ${group_vars};
@@ -134,7 +165,7 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone --branch experimental ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
