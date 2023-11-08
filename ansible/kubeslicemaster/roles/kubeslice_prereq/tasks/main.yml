@@ -47,6 +47,7 @@
   retries: 3
   delay: 10
   until: label_result.stdout != ''
+  ignore_errors: true
 
 
 #Deploy istio on workers

@@ -1,0 +1,68 @@
+apiVersion: controller.kubeslice.io/v1alpha1
+kind: SliceConfig
+metadata: 
+  name: production
+  namespace: kubeslice-{{ kubeslice_project }}
+spec:
+  sliceSubnet: 192.168.0.0/24
+  maxClusters: 16       #Ex: 5. By default, the maxClusters value is set to 16
+  sliceType: Application
+  sliceGatewayProvider:
+    sliceGatewayType: OpenVPN
+    sliceCaType: Local
+  sliceIpamType: Local
+  rotationInterval: 60
+  vpnConfig:
+     cipher: AES-128-CBC
+  clusters:
+    {% for region in regions_array_code %}
+    - {{worker_cluster_label ~ '-' ~ region }}
+    {% endfor %}
+  qosProfileDetails:
+    queueType: HTB
+    priority: 2
+    tcType: BANDWIDTH_CONTROL
+    bandwidthCeilingKbps: 5120
+    bandwidthGuaranteedKbps: 2560
+    dscpClass: AF11
+  namespaceIsolationProfile:
+    isolationEnabled: yes                   #make this true in case you want to enable isolation
+    allowedNamespaces:
+     - namespace: kube-system
+       clusters:
+       - '*'
+---
+
+apiVersion: controller.kubeslice.io/v1alpha1
+kind: SliceConfig
+metadata: 
+  name: production
+  namespace: kubeslice-{{ kubeslice_project }}
+spec:
+  sliceSubnet: 192.168.1.0/24
+  maxClusters: 16       #Ex: 5. By default, the maxClusters value is set to 16
+  sliceType: Application
+  sliceGatewayProvider:
+    sliceGatewayType: OpenVPN
+    sliceCaType: Local
+  sliceIpamType: Local
+  rotationInterval: 60
+  vpnConfig:
+     cipher: AES-128-CBC
+  clusters:
+    {% for region in regions_array_code %}
+    - {{worker_cluster_label ~ '-' ~ region }}
+    {% endfor %}
+  qosProfileDetails:
+    queueType: HTB
+    priority: 2
+    tcType: BANDWIDTH_CONTROL
+    bandwidthCeilingKbps: 5120
+    bandwidthGuaranteedKbps: 2560
+    dscpClass: AF11
+  namespaceIsolationProfile:
+    isolationEnabled: yes                   #make this true in case you want to enable isolation
+    allowedNamespaces:
+     - namespace: kube-system
+       clusters:
+       - '*'

@@ -12,3 +12,4 @@
     - LKE
     - kubeslice_prereq
     - kubeslice_components
+    - slices
