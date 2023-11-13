@@ -28,12 +28,78 @@
 - name: Defining region coordinates
   set_fact:
     region_coordinates:
+      us-southeast:
+        latitude: "33.7488"
+        longitude: "-84.3877"
+      us-ord:
+        latitude: "41.881832"
+        longitude: "-87.623177"
+      us-central:
+        latitude: "32.779167"
+        longitude: "-96.808891"
+      us-west:
+        latitude: "37.548271"
+        longitude: "-121.988571"
+      us-lax:
+        latitude: "34.052235"
+        longitude: "-118.243683"
+      us-miami:
+        latitude: "25.761681"
+        longitude: "-80.191788"
+      us-east:
+        latitude: "40.735657"
+        longitude: "-74.172363"
+      us-sea:
+        latitude: "47.608013"
+        longitude: "-122.335167"
+      us-iad:
+        latitude: "38.889805"
+        longitude: "-77.009056"
+      ca-central:
+        latitude: "43.651070"
+        longitude: "-79.347015"
+      se-sto:
+        latitude: "59.334591"
+        longitude: "18.063240"
+      nl-ams:
+        latitude: "52.377956"
+        longitude: "4.897070"
+      it-mil:
+        latitude: "45.464664"
+        longitude: "9.188540"
+      eu-west:
+        latitude: "51.509865"
+        longitude: "-0.118092"
       fr-par:
-        latitude: "48.864716"
-        longitude: "2.349014"
+        latitude: "48.856613"
+        longitude: "2.352222"
+      eu-central:
+        latitude: "50.110924"
+        longitude: "8.682127"
+      ap-south:
+        latitude: "1.290270"
+        longitude: "103.851959"
+      jp-osa:
+        latitude: "34.672314"
+        longitude: "135.484802"
+      ap-northeast:
+        latitude: "35.652832"
+        longitude: "139.839478"
+      in-maa:
+        latitude: "13.067439"
+        longitude: "80.237617"
+      ap-west:
+        latitude: "19.076090"
+        longitude: "72.877426"
+      id-cgk:
+        latitude: "-6.200000"
+        longitude: "106.816666"
       br-gru:
         latitude: "-23.533773"
         longitude: "-46.625290"
+      ap-southeast:
+        latitude: "-33.865143"
+        longitude: "151.209900"
 
 - name: Create Kubeconfig directory if it does not exist
   file:
