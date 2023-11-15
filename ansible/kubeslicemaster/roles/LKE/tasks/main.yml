@@ -171,7 +171,18 @@
       count: "{{ worker_cluster_nodes }}"
     state: present
   with_items: "{{ regions_array_code }}"
+  async: 600
+  poll: 0    
+  register: async_result
 
+- name: Wait for worker clusters creation to complete
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 300
+  delay: 10
+  with_items: "{{ async_result.results }}"
 
 - name: fetch workers kubeconfig
   linode.cloud.lke_cluster_info:
