@@ -43,7 +43,7 @@
 
 - name: pause to let helm charts install correctly
   ansible.builtin.pause:
-    minutes: 4
+    minutes: 2
 
 - name: adding project template
   template:
@@ -161,4 +161,4 @@
 
 - name: letting sliceOperators install complete
   ansible.builtin.pause:
-    minutes: 3
+    minutes: 2
